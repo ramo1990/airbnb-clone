@@ -1,21 +1,20 @@
-import { RegisterFormValues } from '@/lib/types'
 import { cn } from '@/lib/utils'
-import { FieldErrors, UseFormRegister } from 'react-hook-form'
+import { FieldErrors, FieldValues, Path, UseFormRegister } from 'react-hook-form'
 import { BiDollar } from 'react-icons/bi'
 
 
-interface InputProps {
-    id: keyof RegisterFormValues
+interface InputProps<T extends FieldValues>{
+    id: Path<T>
     label: string
     type?: string
     disabled?: boolean
     formatPrice?: boolean
     required: boolean
-    register: UseFormRegister<RegisterFormValues>
-    errors: FieldErrors<RegisterFormValues>
+    register: UseFormRegister<T>
+    errors: FieldErrors<T>
 }
 
-const Input = ({id, label, type="text", disabled, formatPrice, required, register, errors}: InputProps) => {
+function Input<T extends FieldValues>({id, label, type="text", disabled, formatPrice, required, register, errors}: InputProps<T>) {
     return (
         <div className='relative w-full'>
             {formatPrice && (
