@@ -8,6 +8,9 @@ from datetime import timedelta
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
+
+AUTH_USER_MODEL = "accounts.CustomUser"
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
@@ -32,6 +35,8 @@ INSTALLED_APPS = [
 
     "rest_framework",
     "corsheaders",
+
+    "accounts",
 ]
 
 MIDDLEWARE = [
@@ -46,7 +51,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3001/",
+    "http://localhost:3001",
 ]
 
 ROOT_URLCONF = 'backend.urls'
