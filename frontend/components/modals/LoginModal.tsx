@@ -1,6 +1,6 @@
 "use client"
 
-import { RegisterFormValues } from '@/lib/types'
+import { LoginFormValues } from '@/lib/types'
 import useRegisterModal from '@/lib/useRegisterModal'
 import React, { useState } from 'react'
 import {SubmitHandler, useForm } from 'react-hook-form'
@@ -17,31 +17,26 @@ import { AxiosError } from 'axios'
 import useAuthStore from '@/lib/useAuthStore'
 
 
-const RegisterModal = () => {
+const LoginModal = () => {
     const registerModal = useRegisterModal()
-    const [isLoading, setIsLoading] = useState(false)
     const loginModal = useLoginModal()
+    const [isLoading, setIsLoading] = useState(false)
     const loadUser = useAuthStore((s) => s.loadUser)
 
-    const {register, handleSubmit, formState: {errors}} = useForm<RegisterFormValues>({
+    const {register, handleSubmit, formState: {errors}} = useForm<LoginFormValues>({
         defaultValues: {
-            name: "",
             email: "",
             password:""
         }
     })
 
-    const onSubmit: SubmitHandler<RegisterFormValues> = async (data) => {
+    const onSubmit: SubmitHandler<LoginFormValues> = async (data) => {
         try {
             setIsLoading(true)
+            loginModal.onClose()
 
-            await api.post("/register/", data)
-
-            const tokensRes = await api.post("/login/", {
-                email: data.email,
-                password: data.password
-            })
-            const {access, refresh} = tokensRes.data
+            const tokensRes = await api.post("/login/", {email: data.email, password: data.password})
+            const {access, refresh } = tokensRes.data
 
             if (typeof window !== "undefined") {
                 localStorage.setItem("access", access)
@@ -49,23 +44,21 @@ const RegisterModal = () => {
             }
 
             await loadUser()
-            toast.success("Compte crée avec succès")
-            registerModal.onClose()
+            toast.success("Connexion réussie")
+
         } catch (error) {
             const err = error as AxiosError
-            console.error("Erreur d'inscription:", err.response?.data || error)
-            toast.error("Une erreur s'est produite")
+            console.error('Erreur de connxion:', err.response?.data || error)
+            toast.error("Email ou mot de passe incorrect")
         } finally {
             setIsLoading(false)
         }
-        
     }
 
     const bodyContent = (
         <div className='flex flex-col gap-4'>
-            <Heading title='Bienvenue sur airbnb' subtitle='Créer un compte'/>
+            <Heading title='Bon retour parmi nous' subtitle='Connectez-vous à votre compte'/>
             <Input id="email" label='Email' disabled={isLoading} register={register} errors={errors} required />
-            <Input id="name" label='Nom' disabled={isLoading} register={register} errors={errors} required />
             <Input id="password" type='password' label='Mot de passe' disabled={isLoading} register={register} errors={errors} required />
         </div>
     )
@@ -89,15 +82,15 @@ const RegisterModal = () => {
 
             <div className='text-neutral-500 text-center mt-4 font-light'>
                 <div className='justify-center flex flex-row items-center gap-2'>
-                    Vous avez déjà un compte ? 
+                    Vous n&apos;avez  pas de compte ? 
                     <div 
                         onClick={() => {
-                            registerModal.onClose()
-                            loginModal.onOpen()
+                            loginModal.onClose()
+                            registerModal.onOpen()
                         }}
                         className='text-neutral-950 cursor-pointer hover:underline'
                     >
-                        Se connecter
+                       Inscrivez-vous
                     </div>
                 </div>
 
@@ -108,10 +101,10 @@ const RegisterModal = () => {
     return (
         <Modal 
             disabled={isLoading}
-            isOpen= {registerModal.isOpen}
-            title='Inscription'
-            actionLabel="S'inscrire"
-            onClose={registerModal.onClose}
+            isOpen= {loginModal.isOpen}
+            title='Se connecter'
+            actionLabel="Continuer"
+            onClose={loginModal.onClose}
             onSubmit={handleSubmit(onSubmit)}
             body={bodyContent}
             footer={footerContent}
@@ -119,4 +112,4 @@ const RegisterModal = () => {
     )
 }
 
-export default RegisterModal
+export default LoginModal
