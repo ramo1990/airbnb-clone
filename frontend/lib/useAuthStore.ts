@@ -1,6 +1,7 @@
 import { CurrentUserType } from './types'
 import { create } from 'zustand'
 import { getCurrentUser } from './getCurrentUser'
+import { signOut } from 'next-auth/react'
 
 
 interface AuthStoreProps {
@@ -14,11 +15,12 @@ const useAuthStore = create<AuthStoreProps>((set) => ({
     currentUser: null,
     setUser: (user) => set({currentUser: user}),
 
-    logout: () => {
+    logout: async() => {
         if (typeof window !== "undefined") {
             localStorage.removeItem("access")
             localStorage.removeItem("refresh")
         }
+        await signOut({redirect: false})
         set({currentUser: null})
     },
 

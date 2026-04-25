@@ -8,6 +8,7 @@ import useRegisterModal from '@/lib/useRegisterModal'
 import useLoginModal from '@/lib/useLoginModal'
 import useAuthStore from '@/lib/useAuthStore'
 import toast from 'react-hot-toast'
+import { useSession } from 'next-auth/react'
 
 
 const UserMenu = () => {
@@ -16,6 +17,7 @@ const UserMenu = () => {
     const registerModal = useRegisterModal()
     const loginModal = useLoginModal()
     const {currentUser, logout} = useAuthStore()
+    const {data: session, status} = useSession()
 
     const handleLogout = () => {
         logout()
@@ -39,6 +41,14 @@ const UserMenu = () => {
         }
     }, [])
 
+    if (status === "loading" || (status === "authenticated" && !session?.user)) {
+        return null
+    }
+
+    const user = session?.user || currentUser
+
+    console.log("USER:", user)
+
     return (
         <div className='relative' ref={menuRef}>
             <div className='flex flex-row items-center gap-3'>
@@ -56,14 +66,14 @@ const UserMenu = () => {
                         cursor-pointer hover:shadow-md transition'
                 >
                     <MenuIcon className='w-9 h-9 md:h-5 md:w-5' />
-                    <div className='hidden md:block'> <Avatar /> </div>
+                    <div className='hidden md:block'> <Avatar src={user?.image || session?.user?.image}/> </div>
                 </div>
             </div>
 
             {isOpen && (
                 <div className='absolute rounded-xl shadow-md w-[80vw] sm:w-[60vw] md:w-[40vw] lg:[25vw] bg-white overflow-hidden right-0 top-12 text-sm'>
                     <div className='flex flex-col cursor-pointer'>
-                        {currentUser ? (
+                        {user ? (
                             <>
                                 <MenuItem onClick={() => {}} label='Mes voyages'/>
                                 <MenuItem onClick={() => {}} label="Mes favoris"/>

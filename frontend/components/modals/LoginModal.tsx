@@ -15,6 +15,7 @@ import toast from 'react-hot-toast'
 import useLoginModal from '@/lib/useLoginModal'
 import { AxiosError } from 'axios'
 import useAuthStore from '@/lib/useAuthStore'
+import { signIn } from 'next-auth/react'
 
 
 const LoginModal = () => {
@@ -55,6 +56,15 @@ const LoginModal = () => {
         }
     }
 
+    const handleSocialLogin = async (provider: "google" | "facebook") => {
+        const res = await signIn(provider, {redirect: false})
+
+        if (res?.ok) {
+            await loadUser()
+            window.location.reload()
+        }
+    }
+
     const bodyContent = (
         <div className='flex flex-col gap-4'>
             <Heading title='Bon retour parmi nous' subtitle='Connectez-vous à votre compte'/>
@@ -70,14 +80,14 @@ const LoginModal = () => {
                 variant="outline"
                 label='Google'
                 icon={FcGoogle}
-                onClick={() => {}}
+                onClick={() => handleSocialLogin("google")}
             />
 
             <Button 
                 variant="outline"
                 label='Facebook'
                 icon={FaFacebook}
-                onClick={() => {}}
+                onClick={() => handleSocialLogin("facebook")}
             />
 
             <div className='text-neutral-500 text-center mt-4 font-light'>
