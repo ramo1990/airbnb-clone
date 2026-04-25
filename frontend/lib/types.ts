@@ -13,5 +13,5 @@ export interface CurrentUserType {
     id: string
     email: string
     name: string
-    password: string | null
+    image: string | null
 }

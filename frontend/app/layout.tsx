@@ -5,7 +5,7 @@ import Navbar from "@/components/navbars/Navbar";
 import RegisterModal from "@/components/modals/RegisterModal";
 import { Toaster } from "react-hot-toast";
 import LoginModal from "@/components/modals/LoginModal";
-import AuthProvider from "@/components/providers/AuthProvider";
+import Provider from "@/components/providers/Provider";
 
 
 const font = Nunito({
@@ -25,13 +25,13 @@ export default function RootLayout({children,}: Readonly<{children: React.ReactN
       className={font.className}
     >
       <body className={font.className}>
-        <AuthProvider>
+        <Provider>
           <Toaster />
           <RegisterModal />
           <LoginModal />
           <Navbar />
           {children}
-        </AuthProvider>
+        </Provider>
       </body>
     </html>
   );
