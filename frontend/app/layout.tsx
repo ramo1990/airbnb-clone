@@ -30,7 +30,9 @@ export default function RootLayout({children,}: Readonly<{children: React.ReactN
           <RegisterModal />
           <LoginModal />
           <Navbar />
-          {children}
+          <div className="pt-36 md:pt-28 pb-20">
+            {children}
+          </div>
         </Provider>
       </body>
     </html>
