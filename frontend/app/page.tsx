@@ -2,6 +2,8 @@ import Categories from "@/components/navbars/Category";
 
 export default function Home() {
   return (
-    <Categories />
+    <div className="bg-neutral-100">
+      <Categories />
+    </div>
   )
 }
