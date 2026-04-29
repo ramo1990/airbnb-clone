@@ -2,7 +2,7 @@
 
 import useRentModal from '@/lib/useRentModal'
 import React, { useMemo, useState } from 'react'
-import { FieldValues, useForm } from 'react-hook-form'
+import { FieldValues, SubmitHandler, useForm } from 'react-hook-form'
 import Heading from '../Heading'
 import { categoryItems } from '../navbars/Category'
 import CategoryInput from '../Inputs/CategoryInput'
@@ -15,6 +15,10 @@ import { haversineDistance } from '@/lib/distance'
 import { findCountryFromCoords } from '@/lib/findCountry'
 import Counter from '../Inputs/Counter'
 import MultiImageUpload from '../Inputs/ImageUpload'
+import Input from '../Inputs/Input'
+import toast from 'react-hot-toast'
+import { api } from '@/lib/axios'
+import { useRouter } from 'next/navigation'
 
 
 enum STEPS {
@@ -29,10 +33,12 @@ enum STEPS {
 const RentModal = () => {
     const rentModal = useRentModal()
     const [step, setStep] = useState(STEPS.CATEGORY)
+    const [isLoading, setIsloading] = useState(false)
+    const router = useRouter()
 
     const LocationMap = useMemo(() => dynamic(() => import("../Map"), {ssr: false}), [])
 
-    const {setValue, watch} = useForm<FieldValues>({
+    const {setValue, watch, register, formState:{errors}, reset, handleSubmit} = useForm<FieldValues>({
         defaultValues: {
             category: "",
             location: null,
@@ -40,7 +46,10 @@ const RentModal = () => {
             guestCount: 1,
             roomCount: 1,
             bathroomCount: 1,
-            images: []
+            images: [],
+            title: "", 
+            description: "",
+            price: 1
         }
     })
    
@@ -143,6 +152,31 @@ const RentModal = () => {
         return "Retour"
     }, [step])
 
+    const onSubmit: SubmitHandler<FieldValues> = (data) => {
+        if (step !== STEPS.PRICE) {
+            return onNext()
+        }
+        setIsloading(true)
+
+        console.log("Données envoyées à django:", data)
+
+        api.post("listing", data)
+        .then(() => {
+            toast.success('Annonce créée')
+            router.refresh()
+            reset()
+            setStep(STEPS.CATEGORY)
+            rentModal.onClose()
+        })
+        .catch((error) => {
+            const message = error.response?.data?.message || error.message || "Une erreur s'est produite"
+            toast.error(`Erreur lors de la création de votre annonce:" ${message}`)
+        })
+        .finally (() => {
+            setIsloading(false)
+        })
+    }
+
     let bodyContent = (
         <div>
             <Heading 
@@ -240,11 +274,50 @@ const RentModal = () => {
         )
     }
 
+    if (step === STEPS.DESCRIPTION) {
+        bodyContent = (
+            <div className='flex flex-col gap-8'>
+                <Heading 
+                    title='Comment decririez-vous votre logement ?' subtitle='Une description courte et concise est idéale'
+                />
+                <Input id="title" label="Titre" disabled={isLoading} register={register} errors={errors} required />
+                <hr />
+                
+                <div className='flex flex-col gap-2'>
+                    <label className='text-neutral-900 font-medium'>Description</label>
+                    <textarea 
+                        id='description'
+                        {...register("description", {required: true})}
+                        disabled={isLoading}
+                        className='w-full p-4 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2
+                        focus:ring-neutral-900 resize-none h-32 text-neutral-900' 
+                        placeholder='Décrivez votre logement'
+                    />
+                </div>
+            </div>
+        )
+    }
+
+    if (step === STEPS.PRICE) {
+        bodyContent = (
+            <div className='flex flex-col gap-8'>
+                <Heading title='Définissez votre prix' subtitle='Combien facturez-vous par nuit ?' />
+                <Input id='price' label="Prix" formatPrice type='number' disabled={isLoading} register={register} errors={errors} 
+                    rules={{
+                        valueAsNumber: true,
+                        min: {value: 1, message: "Le prix doit être au moins de 1"}
+                    }} 
+                    required
+                />
+            </div>
+        )
+    }
+
     return (
         <Modal 
             isOpen= {rentModal.isOpen}
             onClose= {rentModal.onClose}
-            onSubmit={onNext}
+            onSubmit={handleSubmit(onSubmit)}
             actionLabel={actionLabel}
             secondaryActionLabel={secondaryActionLabel}
             secondaryAction={step === STEPS.CATEGORY ? undefined : onBack}
