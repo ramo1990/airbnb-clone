@@ -19,7 +19,13 @@ const nextConfig: NextConfig = {
         hostname: "platform-lookaside.fbsbx.com", 
         pathname: "/**"
       },
-    ]
+      {
+        protocol: "https",
+        hostname: "my-airbnb-clone2.s3.eu-north-1.amazonaws.com", 
+        pathname: "/**"
+      },
+    ],
+    qualities: [75, 95]
   }
 };
 
