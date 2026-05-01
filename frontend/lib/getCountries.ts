@@ -9,3 +9,9 @@ const formattedCountries = countries.map((country) => ({
 }))
 
 export const getAllCountries = () => formattedCountries
+export const getCountryByValue = (value: string) => formattedCountries.find(c => c.value === value)
+
+export const getCountries = () => ({
+    getAll: getAllCountries,
+    getByValue: getCountryByValue
+})

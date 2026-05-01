@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 
 from .serializers import CreateListingSerializer, ListingSerializer
+from .models import Listing
 
 
 class ListingCreateView(APIView):
@@ -20,3 +21,12 @@ class ListingCreateView(APIView):
             except Exception as e:
                 return Response({"error": "Une erreur est survenue lors de la creation de votre annonce"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    
+class ListingListView(APIView):
+    permission_classes = []
+
+    def get(self, request):
+        listings = Listing.objects.all().order_by("-created_at")
+        serializer = ListingSerializer(listings, many=True)
+        return Response(serializer.data)

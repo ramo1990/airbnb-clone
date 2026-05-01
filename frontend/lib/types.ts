@@ -14,4 +14,42 @@ export interface CurrentUserType {
     email: string
     name: string
     image: string | null
+    favoriteIds: string[]
 }
+
+
+export interface OwnerType {
+    id: string
+    email: string
+    name: string
+    image: string | null
+}
+
+export interface ListingType {
+    id: string
+    title: string
+    description: string
+    categories: string
+
+    country_label: string
+    country_code: string
+    country_flag: string
+    country_region: string
+    country_lat: number
+    country_lng: number
+
+    city_name: string | null
+    city_lat: number | null
+    city_lng: number | null
+
+    guest_count: number
+    room_count: number
+    bathroom_count: number
+
+    images: string[]
+    price: string
+    created_at: string
+
+    owner: OwnerType
+}
+
