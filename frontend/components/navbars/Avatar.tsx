@@ -6,10 +6,11 @@ interface AvatarProps {
 }
 
 const Avatar = ({src}: AvatarProps) => {
+  const validSrc = src && (src.startsWith("http") || src.startsWith("/")) ? src : "/user.png"
   return (
     <Image 
         alt="Avatar"
-        src={src || "/user.png"}
+        src={validSrc}
         height={30}
         width={30}
         className='rounded-full'

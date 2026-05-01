@@ -2,7 +2,7 @@
 
 
 import { getCountries } from '@/lib/getCountries'
-import { ListingType } from '@/lib/types'
+import { CurrentUserType, ListingType } from '@/lib/types'
 import React, { useCallback } from 'react'
 import Image from 'next/image'
 import { Button } from '../ui/button'
@@ -15,9 +15,11 @@ interface ListingCardProps {
     disabled?: boolean
     actionLabel?: string
     actionId: string
+    currentUser: CurrentUserType | null
+    onFavoriteToggle?: (id: string) => void
 }
 
-const ListingCard = ({data, onAction, disabled, actionLabel, actionId}: ListingCardProps) => {
+const ListingCard = ({data, onAction, disabled, actionLabel, actionId, currentUser, onFavoriteToggle}: ListingCardProps) => {
     const {getByValue} = getCountries()
     const location = getByValue(data.country_code)
     const router = useRouter()
@@ -56,7 +58,7 @@ const ListingCard = ({data, onAction, disabled, actionLabel, actionId}: ListingC
                     />
 
                     <div className='absolute top-3 right-3'>
-                        <HeartButton listingId={data.id} />
+                        <HeartButton listingId={data.id} currentUser={currentUser} onToggle={() => onFavoriteToggle?.(data.id)} />
                     </div>
                 </div>
 

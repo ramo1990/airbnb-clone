@@ -28,6 +28,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     image = models.URLField(max_length=500, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    favorites = models.ManyToManyField("listing.Listing", related_name="favorited_by", blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
