@@ -2,9 +2,12 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
+from uuid import UUID
+from django.shortcuts import get_object_or_404
 
 from .serializers import CreateListingSerializer, ListingSerializer
 from .models import Listing
+from accounts.serializers import CurrentUserSerializer
 
 
 class ListingCreateView(APIView):
@@ -30,3 +33,27 @@ class ListingListView(APIView):
         listings = Listing.objects.all().order_by("-created_at")
         serializer = ListingSerializer(listings, many=True)
         return Response(serializer.data)
+    
+
+class FavoriteToggleView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, listing_id):
+        user = request.user
+        listing = get_object_or_404(Listing, id=listing_id)
+        user.favorites.add(listing)
+
+        return Response(
+            CurrentUserSerializer(user).data,
+            status=status.HTTP_200_OK
+        )
+    
+    def delete(self, request, listing_id):
+        user = request.user
+        listing = get_object_or_404(Listing, id=listing_id)
+        user.favorites.remove(listing)
+
+        return Response(
+            CurrentUserSerializer(user).data,
+            status=status.HTTP_200_OK
+        )
