@@ -1,12 +1,35 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import Logo from './Logo'
 import Container from '../Container'
 import Search from './Search'
 import UserMenu from './UserMenu'
 
-const Navbar = () => {
+
+interface NavbarProps {
+    onHeight: (height: number) => void
+}
+
+const Navbar = ({onHeight}: NavbarProps) => {
+    const navRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        const updateHeight = () => {
+            if (navRef.current) {
+                onHeight(navRef.current.offsetHeight)
+            }
+        }
+
+        updateHeight()
+
+        window.addEventListener("resize", updateHeight)
+        return () => window.removeEventListener("resize", updateHeight)
+    }, [onHeight])
+
     return (
-        <div className='fixed w-full bg-white z-10 shadow-sm'>
+        <div 
+            ref = {navRef}
+            className='fixed w-full bg-white z-10 shadow-sm'
+        >
             <div className='py-4 md:border-b'>
                 <Container>
                     <div className='flex items-center justify-between gap-3 md:gap-0'>
