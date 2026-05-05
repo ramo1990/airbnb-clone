@@ -1,12 +1,13 @@
 "use client"
 
-import { CurrentUserType, ListingType } from "@/lib/types"
+import { CurrentUserType, ListingType, ReservationType } from "@/lib/types"
 import { use, useEffect, useState } from "react"
 import { getCurrentUser } from "@/lib/getCurrentUser"
 import { getListingById } from "@/lib/getListingById"
 import Skeleton from "@/components/Skeleton"
 import EmptyState from "@/components/EmptyState"
 import ListingClient from "./ListingClient"
+import { getReservationsByListing } from "@/lib/getreservations"
 
 
 interface IParams {
@@ -19,6 +20,7 @@ export default function ListingPage ({params}: {params: Promise<IParams>}) {
     const [currentUser, setCurrentUser] = useState<CurrentUserType | null>(null)
     const [error, setError] = useState<string | null>(null)
     const [isLoading, setIsLoading] = useState(true)
+    const [reservations, setReservations] = useState<ReservationType[]>([])
 
 
     useEffect(() => {
@@ -27,10 +29,11 @@ export default function ListingPage ({params}: {params: Promise<IParams>}) {
 
         Promise.allSettled([
             getListingById(listingId),
-            getCurrentUser()
+            getCurrentUser(),
+            getReservationsByListing(listingId)
         ])
         .then((results) => {
-            const [listingResult, userResult] = results
+            const [listingResult, userResult, reservationsResult] = results
 
             if (listingResult.status === "fulfilled") {
                 setListing(listingResult.value)
@@ -43,6 +46,10 @@ export default function ListingPage ({params}: {params: Promise<IParams>}) {
 
             if (userResult.status === "fulfilled") {
                 setCurrentUser(userResult.value)
+            }
+
+            if (reservationsResult.status === "fulfilled") {
+                setReservations(reservationsResult.value)
             }
         })
         .finally(() => setIsLoading(false))
@@ -64,7 +71,7 @@ export default function ListingPage ({params}: {params: Promise<IParams>}) {
     }
 
     return (
-        <ListingClient listing={listing} currentUser={currentUser} />
+        <ListingClient listing={listing} currentUser={currentUser} reservations={reservations} />
     )
  }
 

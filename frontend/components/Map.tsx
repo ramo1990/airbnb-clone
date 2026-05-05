@@ -42,11 +42,11 @@ function RecenterMap({center}: {center: [number, number]}) {
 const LocationMap = ({center, onClickMap, nearbyCities}: MapProps) => {
     return (
         <MapContainer
-            key={center ? center.toString() : "default"}
+            // key={center ? center.toString() : "default"}
             center={(center ?? [51, -0.09]) as L.LatLngExpression}
             zoom={center ? 6: 2}
             scrollWheelZoom={false}
-            className='h-[35vh] rounded-ld'
+            className='h-[35vh] rounded-lg'
         >
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 

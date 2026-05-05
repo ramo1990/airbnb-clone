@@ -63,6 +63,9 @@ export default function ImageCarouselModal({images, isOpen, onClose}: ImageCarou
                     alt='Photo' 
                     fill 
                     className='object-contain' 
+                    sizes='100vw'
+                    loading={index === 0 ? "eager" : "lazy"}
+                    priority={index === 0}
                 />
                 <button 
                     onClick={prev}

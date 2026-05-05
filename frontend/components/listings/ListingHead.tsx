@@ -44,6 +44,9 @@ const ListingHead = ({title, locationValue, city, images, id, currentUser}: List
                         alt="Image principale" 
                         fill 
                         className="object-cover rounded-xl" 
+                        loading="eager"
+                        priority
+                        sizes="100vw"
                     />
                     <div className="absolute top-5 right-5">
                         <HeartButton listingId={id} currentUser={currentUser} />
@@ -64,6 +67,9 @@ const ListingHead = ({title, locationValue, city, images, id, currentUser}: List
                             alt="Image principale" 
                             fill 
                             className="object-cover rounded-xl" 
+                            loading="eager"
+                            priority
+                            sizes="(max-width: 768px) 100vw, 50vw"
                         />
                         <div className="absolute top-5 right-5 z-20">
                             <HeartButton listingId={id} currentUser={currentUser} />
@@ -81,6 +87,7 @@ const ListingHead = ({title, locationValue, city, images, id, currentUser}: List
                                 src={img}
                                 fill 
                                 className="object-cover rounded-xl"
+                                sizes="(max-width: 768px) 50vw, 25vw"
                             />
                         </div>
                     ))}
