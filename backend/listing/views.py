@@ -35,6 +35,14 @@ class ListingListView(APIView):
         return Response(serializer.data)
     
 
+class ListingDetailView(APIView):
+    def get(self, request, listing_id):
+        listing = get_object_or_404(Listing, id=listing_id)
+
+        serializer = ListingSerializer(listing)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 class FavoriteToggleView(APIView):
     permission_classes = [IsAuthenticated]
 

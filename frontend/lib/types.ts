@@ -47,9 +47,19 @@ export interface ListingType {
     bathroom_count: number
 
     images: string[]
-    price: string
+    price: number
     created_at: string
 
     owner: OwnerType
 }
 
+export interface ReservationType {
+    id: string 
+    userId: string 
+    listingId: string 
+    startDate: string 
+    endDate: string 
+    totalPrice: number 
+    created_at: string 
+    listing: ListingType
+}

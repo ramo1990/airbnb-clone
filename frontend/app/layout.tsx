@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/navbars/Navbar";
 import RegisterModal from "@/components/modals/RegisterModal";
 import { Toaster } from "react-hot-toast";
 import LoginModal from "@/components/modals/LoginModal";
 import Provider from "@/components/providers/Provider";
 import RentModal from "@/components/modals/RentModal";
+import ClientLayout from "@/components/ClientLayout";
 
 
 const font = Nunito({
@@ -31,10 +31,9 @@ export default function RootLayout({children,}: Readonly<{children: React.ReactN
           <RegisterModal />
           <LoginModal />
           <RentModal />
-          <Navbar />
-          <div className="pt-36 md:pt-28 pb-20">
+          <ClientLayout>
             {children}
-          </div>
+          </ClientLayout>
         </Provider>
       </body>
     </html>
