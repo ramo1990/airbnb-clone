@@ -83,7 +83,6 @@ const ListingClient = ({listing, currentUser, reservations}: ListingClientProps)
             listingId: listing?.id
         }
 
-        console.log("Données:", payload)
         api.post("/reservations/", payload)
         .then(() => {
             toast.success("Annonce réservée")
