@@ -2,12 +2,15 @@
 
 
 import { getCountries } from '@/lib/getCountries'
-import { CurrentUserType, ListingType } from '@/lib/types'
-import React, { useCallback } from 'react'
+import { CurrentUserType, ListingType, ReservationType } from '@/lib/types'
+import React, { useCallback, useMemo } from 'react'
 import Image from 'next/image'
 import { Button } from '../ui/button'
 import HeartButton from '../HeartButton'
 import { useRouter } from 'next/navigation'
+import { format } from "date-fns"
+import { fr } from "date-fns/locale"
+
 
 interface ListingCardProps {
     data: ListingType
@@ -17,9 +20,10 @@ interface ListingCardProps {
     actionId: string
     currentUser: CurrentUserType | null
     onFavoriteToggle?: (id: string) => void
+    reservation?: ReservationType
 }
 
-const ListingCard = ({data, onAction, disabled, actionLabel, actionId, currentUser, onFavoriteToggle}: ListingCardProps) => {
+const ListingCard = ({data, onAction, disabled, actionLabel, actionId, currentUser, onFavoriteToggle, reservation}: ListingCardProps) => {
     const {getByValue} = getCountries()
     const location = getByValue(data.country_code)
     const router = useRouter()
@@ -35,6 +39,23 @@ const ListingCard = ({data, onAction, disabled, actionLabel, actionId, currentUs
     const locationLabel = data.city_name
         ? `${data.city_name}, ${location?.label}`
         : `${location?.label}, ${location?.region}`
+
+    const price = useMemo(() => {
+        if (reservation) {
+            return reservation.totalPrice
+        }
+        return data.price
+    }, [reservation, data.price])
+
+    const reservationDate = useMemo(() => {
+        if (!reservation) {
+            return null
+        }
+        const start = new Date(reservation.startDate)
+        const end = new Date(reservation.endDate)
+
+        return `${format(start, "PP", {locale: fr})} - ${format(end, "PP", {locale: fr})}`
+    }, [reservation])
 
     return (
         <div 
@@ -67,17 +88,20 @@ const ListingCard = ({data, onAction, disabled, actionLabel, actionId, currentUs
                 </div>
 
                 <div className='font-light text-neutral-500'>
-                    {data.categories}
+                    {reservationDate || data.categories}
                 </div>
 
                 <div className='flex flex-row items-center gap-1'>
                     <div className='font-semibold'>
-                        {data.price} $
+                        {price} $
                     </div>
+                    {!reservation && (
+                        <div className='font-light'>par nuit</div>
+                    )}
                 </div>
 
                 {onAction && actionLabel && (
-                    <Button disabled size="sm" label={actionLabel} onClick={handleCancel} />
+                    <Button disabled={disabled} size="sm" label={actionLabel} onClick={handleCancel} />
                 )}
             </div>
         </div>

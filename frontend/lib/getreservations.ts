@@ -10,3 +10,14 @@ export async function getReservationsByListing(listingId: string): Promise<Reser
         return []
     }
 } 
+
+export async function getUserReservations(): Promise<ReservationType[]> {
+    try {
+        const response = await api.get(`/reservations/me/`)
+        return response.data
+    } catch (error) {
+        console.error("Erreur lors de la recuperation des réservations de l'utilisateur:", error)
+        return []
+    }
+} 
+

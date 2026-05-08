@@ -6,6 +6,8 @@ from rest_framework import status
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
 from django.core.exceptions import ValidationError
+from django.utils import timezone
+
 
 from .models import Reservation
 from listing.models import Listing
@@ -91,7 +93,32 @@ class ReservationByListingView(APIView):
 class UserReservationsView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, listing_id):
-        reservations = Reservation.objects.filter(user = request.user)
+    def get(self, request):
+        reservations = Reservation.objects.filter(user = request.user).select_related("listing")
         serializer = ReservationSerializer(reservations, many=True)
         return Response(serializer.data)
+
+
+class CancelReservationView(APIView):
+    permission_classes = [IsAuthenticated]
+
+
+    def delete(self, request, pk):
+        try:
+            reservation = Reservation.objects.select_related('listing').get(pk=pk)
+        except Reservation.DoesNotExist:
+            return Response({"error": "Réservation introuvable"}, status=status.HTTP_404_NOT_FOUND)
+        
+        if reservation.user != request.user and reservation.listing.owner != request.user:
+            return Response({
+                "error": "Vous n'êtes pas autorisé à annuler cette réservation"
+            }, status=status.HTTP_403_FORBIDDEN)
+        
+        today = timezone.now().date()
+        if reservation.start_date <= today:
+            return Response({
+                "error": "Impossible d'annuler une reservation qui a déjà commencé ou qui est déjà passée"
+            }, status=status.HTTP_400_BAD_REQUEST)
+        reservation.delete()
+
+        return Response({"message": "Réservation annulée avec succès"}, status=status.HTTP_200_OK)

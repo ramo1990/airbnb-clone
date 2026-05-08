@@ -10,6 +10,7 @@ import useAuthStore from '@/lib/useAuthStore'
 import toast from 'react-hot-toast'
 import { useSession } from 'next-auth/react'
 import useRentModal from '@/lib/useRentModal'
+import { useRouter } from 'next/navigation'
 
 
 const UserMenu = () => {
@@ -20,6 +21,7 @@ const UserMenu = () => {
     const {currentUser, logout} = useAuthStore()
     const {data: session, status} = useSession()
     const rentModal = useRentModal()
+    const router = useRouter()
 
     const handleLogout = () => {
         logout()
@@ -82,7 +84,7 @@ const UserMenu = () => {
                     <div className='flex flex-col cursor-pointer'>
                         {user ? (
                             <>
-                                <MenuItem onClick={() => {}} label='Mes voyages'/>
+                                <MenuItem onClick={() => {router.push("/trips"); setIsOpen(false)}} label='Mes voyages'/>
                                 <MenuItem onClick={() => {}} label="Mes favoris"/>
                                 <MenuItem onClick={() => {}} label='Mes reservations'/>
                                 <MenuItem onClick={() => {}} label="Mes logements"/>

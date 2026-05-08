@@ -87,8 +87,7 @@ const ListingClient = ({listing, currentUser, reservations}: ListingClientProps)
         .then(() => {
             toast.success("Annonce réservée")
             setDateRange(initialDateRange)
-            router.push("/")
-            // router.push("/trips")
+            router.push("/trips")
         })
         .catch(() => {
             toast.error("Une erreur s'est produite")
