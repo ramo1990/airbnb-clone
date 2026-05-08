@@ -21,3 +21,12 @@ export async function getUserReservations(): Promise<ReservationType[]> {
     }
 } 
 
+export async function getHostReservations(): Promise<ReservationType[]> {
+    try {
+        const response = await api.get(`/reservations/host/`)
+        return response.data
+    } catch (error) {
+        console.error("Erreur lors de la recuperation des réservations de l'hôte:", error)
+        return []
+    }
+}
