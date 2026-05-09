@@ -65,3 +65,12 @@ class FavoriteToggleView(APIView):
             CurrentUserSerializer(user).data,
             status=status.HTTP_200_OK
         )
+    
+class FavoriteListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        favorites = user.favorites.all()
+        serializer = ListingSerializer(favorites, many= True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
