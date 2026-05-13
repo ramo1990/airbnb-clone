@@ -63,3 +63,13 @@ export interface ReservationType {
     created_at: string 
     listing: ListingType
 }
+
+export interface ListingQueryParams {
+    locactionValue?: string
+    guestCount?: number
+    roomCount?: number
+    bathroomCount?: number
+    startDate?: string 
+    endDate?: string 
+    categories?: string
+}
