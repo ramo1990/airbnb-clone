@@ -7,6 +7,10 @@ import LoginModal from "@/components/modals/LoginModal";
 import Provider from "@/components/providers/Provider";
 import RentModal from "@/components/modals/RentModal";
 import ClientLayout from "@/components/ClientLayout";
+import LocationModal from "@/components/modals/LocationModal";
+import DateModal from "@/components/modals/DateModal";
+import GuestsModal from "@/components/modals/GuestsModal";
+import MobileSearchModal from "@/components/modals/MobileSearchModal";
 
 
 const font = Nunito({
@@ -31,6 +35,10 @@ export default function RootLayout({children,}: Readonly<{children: React.ReactN
           <RegisterModal />
           <LoginModal />
           <RentModal />
+          <LocationModal />
+          <DateModal />
+          <GuestsModal />
+          <MobileSearchModal />
           <ClientLayout>
             {children}
           </ClientLayout>
