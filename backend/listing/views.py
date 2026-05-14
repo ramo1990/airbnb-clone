@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnl
 from rest_framework import status
 from uuid import UUID
 from django.shortcuts import get_object_or_404
+from django.utils.dateparse import parse_datetime
 
 from .serializers import CreateListingSerializer, ListingSerializer
 from .models import Listing
@@ -31,6 +32,57 @@ class ListingListView(APIView):
 
     def get(self, request):
         listings = Listing.objects.all().order_by("-created_at")
+
+        # Récupération des filtres
+        location = request.query_params.get("locationValue")
+        guest_count = request.query_params.get("guestCount")
+        room_count = request.query_params.get("roomCount")
+        bathroom_count = request.query_params.get("bathroomCount")
+        start_date = request.query_params.get("startDate")
+        end_date = request.query_params.get("endDate")
+
+        if location:
+            listings = listings.filter(country_code=location)
+
+        if guest_count:
+            try:
+                guest_count = int(guest_count)
+                if guest_count < 1:
+                    return Response({"error": "Le nombre de voyageurs doit être au moins égale à 1"}, status=status.HTTP_400_BAD_REQUEST)
+                listings = listings.filter(guest_count__gte=guest_count)
+            except ValueError:
+                return Response({"error": "Nombre de voyageur invalide"}, status=status.HTTP_400_BAD_REQUEST)
+            
+        if room_count:
+            try:
+                room_count = int(room_count)
+                if room_count < 1:
+                    return Response({"error": "Le nombre de chamlbre doit être au moins égale à 1"}, status=status.HTTP_400_BAD_REQUEST)
+                listings = listings.filter(room_count__gte=room_count)
+            except ValueError:
+                return Response({"error": "Nombre de chambre invalide"}, status=status.HTTP_400_BAD_REQUEST)
+            
+        if bathroom_count:
+            try:
+                bathroom_count = int(bathroom_count)
+                if bathroom_count < 1:
+                    return Response({"error": "Le nombre de salle de bains doit être au moins égale à 1"}, status=status.HTTP_400_BAD_REQUEST)
+                listings = listings.filter(bathroom_count__gte=bathroom_count)
+            except ValueError:
+                return Response({"error": "Nombre de salle de bains invalide"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if start_date and end_date:
+            start = parse_datetime(start_date)
+            end = parse_datetime(end_date)
+
+            if not start and not end:
+                return Response({"error": "Format de date invalide"}, status=status.HTTP_400_BAD_REQUEST)
+            
+            if start >= end:
+                return Response({"error": "La date de début doit être avant la date de fin"}, status=status.HTTP_400_BAD_REQUEST)
+            
+            listings = listings.exclude(reservations__start_date__lt=end, reservations__end_date__gt=start)
+            
         serializer = ListingSerializer(listings, many=True)
         return Response(serializer.data)
     
